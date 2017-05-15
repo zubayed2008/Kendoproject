@@ -1,0 +1,72 @@
+﻿@model StudentBasic.ModelView.StudentInfoModelView
+@{
+    ViewBag.Title = "ShowGridView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ShowGridView</h2>
+
+@(Html.Kendo().Grid<StudentBasic.ModelView.StudentInfoModelView>()
+    .Name("Grid")
+    .Columns(columns =>
+        {
+            columns.Bound(m => m.Name);
+            columns.Bound(m => m.dptName);
+            columns.Bound(m => m.Year);
+            columns.Command(command => command.Destroy()).Width(110);
+
+            //columns.Command(commands =>
+            //    {
+            //        // commands.Custom("Edit").Text("Edit").Click("editFaculty");
+            //        // commands.Custom("Delete").Text("Delete").Click("deleteFaculty");
+            //    });
+        })
+        .Filterable(f => f.Mode(GridFilterMode.Row))
+        .ToolBar(toolbar =>
+              {
+                  toolbar.Template(@<text>
+                    <div class="toolbar">
+                        <div class="k-edit-buttons" style="float:left;">
+                            <a class="k-button k-button-icontext k-grid-header" href="#" id="ShowPopUpFacultyCreate"><span class="k-icon k-add"></span>New Student</a>
+                        </div>
+                    </div>
+                </text>);
+              })
+        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("_FacultyEdit").Window(w => w.Title("Faculty Edit").Width(610)))
+        .DataSource(dataSource => dataSource.Ajax()
+                .Model(model =>
+                {
+                    model.Id(m => m.ID);
+                    model.Field(m => m.Name).Editable(true);
+                })
+          .Batch(false)
+          .ServerOperation(false)
+          .Destroy("StudentDestroy", "StudentInfoes")
+          .Read(read => read.Action("ProductView1", "StudentInfoes"))
+          //.Events(events => events.Error("error"))
+          .PageSize(20)
+                          )
+                         .Pageable(pageable => pageable
+                         .Refresh(true)
+                         .PageSizes(new int[] { 20, 50, 100, 500 })
+                         .ButtonCount(10)
+                        ).Sortable()
+          
+)
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+</script>
+

@@ -1,0 +1,38 @@
+﻿@model StudentBasic.ModelView.StudentInfoModelView
+@{
+    ViewBag.Title = "TableViewDetail";
+}
+
+<h2>Table View Detail</h2>
+
+
+<form class="form-horizontal" method="post">
+    @Html.HiddenFor(m => m.ID)
+    <div class="form-group">
+        <div class="form-inline">
+            <label class="col-md-2 control-label" for="Name">Name :</label>
+            <label class="control-label">@Html.DisplayFor(model => model.Name)</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="form-inline">
+            <label class="col-md-2 control-label" for="Department">Department: </label>
+            <label class="control-label">@Html.DisplayFor(model => model.dptName)</label>
+
+</div>
+    </div>
+    <div class="form-group">
+        <div class="form-inline">
+            <label class="col-md-2 control-label" for="Year">Year: </label>
+            <label class="control-label">@Html.DisplayFor(model => model.Year)</label>
+</div>
+    </div>
+    <input type="button" value="Go back" class="btn btn-success col-md-offset-3" onclick="location.href='TableView/StudentInfoes'" /> <input type="button" value="Cancel" class="btn btn-danger" onclick="location.href='TableView/StudentInfoes'" />@*<input type="button" class="btn btn-danger" value="Cancel" />*@
+</form>
+
+<script>
+
+
+    $("form").kendoValidator().data("kendoValidator");
+</script>
+

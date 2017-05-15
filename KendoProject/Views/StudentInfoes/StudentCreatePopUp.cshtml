@@ -1,0 +1,141 @@
+﻿
+@model StudentBasic.ModelView.StudentInfoModelView
+@*@Html.Label("Student ID: ", htmlAttributes: new { @class = "control-label col-md-6 col-sm-4" })
+@Html.TextBox("Please Enter ID Number",null, new { @class = "col-md-6 col-sm-4" })
+@Html.Label("Student Name: ", htmlAttributes: new { @class = "control-label col-md-6 col-sm-4" })
+@Html.TextBox("Please Enter Name of the Student",null, new { @class = "col-md-6 col-sm-4" })
+@Html.Label("Department: ", htmlAttributes: new { @class = "control-label col-md-6 col-sm-4" })
+@Html.TextBox("Please Enter Department Name",null, new { @class = "col-md-6 col-sm-4" })
+@Html.Label("Registration Year: ", htmlAttributes: new { @class = "control-label col-md-6 col-sm-4" })
+@Html.TextBox("Please Enter Registration Year",null, new { @class = "col-md-6 col-sm-4" })*@
+@Html.HiddenFor(m=> m.ID)
+
+<div class="k-edit-form-container" id="StudentInformation">
+    <div class="editor-label"><label for="StudentName">Student Name:</label></div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control k-textbox" } })
+        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+    </div>
+    <div class="editor-label"><label for="Department Name">Department Name:</label></div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownList()
+        .Name("DeptDrop")
+          .OptionLabel("--Select A Department--")
+          .BindTo(ViewBag.DepartmentID)
+          .HtmlAttributes(new { style = "width: 28%" })
+        )
+        @Html.ValidationMessageFor(model => model.DepartmentID, "", new { @class = "text-danger" })
+    </div>
+    <div class="editor-label"><label for="Year">Registration Year:</label></div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.Year, new { htmlAttributes = new { @class = "form-control k-textbox" } })
+        @Html.ValidationMessageFor(model => model.Year, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="k-edit-buttons k-state-default">
+        @{if (Model.ID>0) { 
+        @Html.Raw(string.Format("<button type='button' class='k-button k-button-icontext k-primary k-grid-update' id='btnAddStudent'><span class='k-icon k-update'></span>Update</button>"));
+        }
+        else {
+            @Html.Raw(string.Format("<button type='button' class='k-button k-button-icontext k-primary k-grid-update' id='btnAddStudent'><span class='k-icon k-update'></span>Save</button>"));
+          }}
+        <button type="button" class="k-button k-button-icontext k-grid-cancel" id="Cancel"><span class="k-icon k-cancel"></span>Cancel</button>
+    </div>
+</div>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 65%;
+    }
+
+        div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+            width: 60%;
+            max-width: none;
+        }
+</style>
+<script>
+
+
+    var validation = $("#StudentInformation").kendoValidator({
+        rules: {
+            custom: function (input) {
+                var errormessage;
+                var remoteAttr = input.attr("data-val-remote-url");
+                if (typeof remoteAttr === typeof undefined || remoteAttr === false) {
+                    return true;
+                }
+                var isInvalid;
+                var data = {};
+                var Name = input.val();
+                var ID = $("#ID").val();
+                data = { ID: ID, Name: Name };
+                $.ajax({
+                    url: remoteAttr,
+                    mode: "abort",
+                    port: "validate" + input.attr('name'),
+                    dataType: "json",
+                    type: input.attr("data-val-remote-type"),
+                    data: data,
+                    async: false,
+                    success: function (response) {
+                        isInvalid = response;
+                        if (isInvalid === true) {
+                            isInvalid = true;
+                        }
+                        else {
+                            isInvalid = false;
+                        }
+                    }
+                });
+                return isInvalid;
+        },
+        departmentRequired: function (input) {
+            if (input.attr("name") == "DeptDrop" && $("#DeptDrop").val() === '') {
+                return false;
+            }
+            return true;
+        }
+    },
+        messages:
+    {
+    custom: function (input) {
+        return "Student Name Already Exist!";
+    }, departmentRequired: "Please select one"
+    }
+
+    }).data("kendoValidator");
+
+
+    $("#Cancel").click(function () {
+        var window = $("#StudentCreatePopUp").data("kendoWindow");
+        window.close();
+        }
+    );
+    $("#btnAddStudent").click(function () {
+       if (validation.validate()) {
+           var sendData = {
+               Name: $("#Name").val(),
+               DepartmentID: $("#DeptDrop").val(),
+               Year: $("#Year").val(),
+               ID: $("#ID").val()
+               
+        };
+        $.ajax({
+
+                url: '@Url.Action("StudentSave", "StudentInfoes")',
+                type: 'Post',
+                data: sendData,
+                success: function (response) {
+                    if (response === 'Success') {
+                        $("#btnAddStudent").closest(".k-window-content").data("kendoWindow").close();
+                    }
+                    else {
+                        alert("Error");
+                    }
+                }
+            });
+        }
+    }
+    );
+
+</script>

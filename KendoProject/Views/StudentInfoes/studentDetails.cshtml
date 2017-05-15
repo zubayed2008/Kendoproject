@@ -1,0 +1,41 @@
+﻿@model StudentBasic.ModelView.StudentInfoModelView
+@Html.HiddenFor(m => m.ID)
+
+<div class="k-edit-form-container" style="margin:0 auto" id="StudentInformation">
+    <div class="editor-label"><label for="StudentName">Student Name:</label></div>
+    <div class="editor-field">
+        @Html.DisplayFor(model => model.Name, new { htmlAttributes = new { @class = "form-control k-textbox col-md-3" } })
+    </div>
+    <div class="editor-label"><label for="Department Name">Department Name:</label></div>
+    <div class="editor-field">
+        @Html.DisplayFor(model => model.dptName, new { htmlAttributes = new { @class = "form-control k-textbox" } })
+       
+    </div>
+    <div class="editor-label"><label for="Year">Registration Year:</label></div>
+    <div class="editor-field">
+        @Html.DisplayFor(model => model.Year, new { htmlAttributes = new { @class = "form-control k-textbox" } })
+    </div>
+
+    <div class="k-edit-buttons k-state-default">
+        <button type="button" class="k-button k-button-icontext k-primary k-grid-update" id="close"><span class="k-icon k-update"></span>Close</button>
+    </div>
+</div>
+
+<script>
+    $("#close").click(function () {
+        var window = $("#StudentCreatePopUp").data("kendoWindow");
+        window.close();
+    }
+    );
+</script>
+
+ <style type="text/css">
+    div.k-edit-form-container {
+        width: 65%;
+    }
+
+        div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+            width: 60%;
+            max-width: none;
+        }
+</style>

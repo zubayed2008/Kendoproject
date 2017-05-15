@@ -1,0 +1,439 @@
+﻿@*Md. Zubayed Islam
+    12/11/2016
+    *@
+
+@model StudentBasic.ModelView.StudentInfoModelView
+@{
+    ViewBag.Title = "DynamicField";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm())
+{
+@Html.HiddenFor( m => m.alldept)
+<h2>Dynamic Field</h2>
+        <form method="post" id="myform">
+                <div id="contain" class="inputField">
+                    <div class="form-group">                                    
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="row">
+                                            <div class="col"><input class="k-textbox" placeholder="Department Name" data-val-required="Department Name Required" id="deptname-1" name="deptname-1" type="text" /></div>
+                                            <div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptname-1"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="row">
+                                            <div class="col"><input class="k-textbox" placeholder="Department Code" data-val-number="Enter valid Department Code" data-val-required="Department Code Required" id="deptcode-1" name="deptcode-1" type="text" /></div>
+                                            <div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptcode-1"></span></div>
+                                        </div>   
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="row">
+                                            <div class="col">
+                                                <button class="addbutton k-button" id="Button-1" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                            </div>
+                                            <div class="col"></div>
+                                            
+                                        </div>
+                                    </div>                                
+                                </div>
+                            </div>
+                        </div>
+                        
+                
+            
+            <br />
+                <input type="submit" onclick="change" class="btn btn-success" id="submitdept" value="Save" />
+            
+</form>
+    <div id="LoadPartial" class="col-lg-12 col-md-12">
+    </div>
+}
+
+<style>
+    /*.k-widget.k-tooltip-validation {
+  display: none !important;
+}*/
+    /*span[id^='deptname'].k-widget.k-tooltip-validation{
+        display: block;
+                    width:160px;
+                    position:absolute;
+                    left:360px;
+    }
+    span[id^='deptcode'].k-widget.k-tooltip-validation{
+        display: block;
+                    width:160px;
+                    position:absolute;
+                    left:560px;
+    }*/
+    .field-validation-valid{
+
+    }
+    span[id^='deptname'].k-widget.k-tooltip-validation{
+        display: inline-block;             
+        width:160px;  
+    }
+    span[id^='deptcode'].k-widget.k-tooltip-validation{
+        display: inline-block;
+        width:160px;           
+    }
+    /*#deptname-1_validationMessage.k-widget.k-tooltip-validation {
+                    display: block;
+                    width:160px;
+                    position:absolute;
+                    left:360px;
+                }
+    #deptcode-1_validationMessage.k-widget.k-tooltip-validation{
+        display: block;
+        width:160px;
+        position:absolute;
+        left: 560px;
+    }*/
+                                       
+    /*span.k-widget.k-tooltip-validation.k-invalid-msg {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}*/               
+            
+     
+</style>
+
+
+
+
+
+<script>
+    var count = 2;
+   
+    $(document).ready( function()
+    {
+        var addbtn = $(".addbutton");
+        var inputfield = $(".inputField");
+
+        //$(addbtn).click(
+        //    function (e) {
+        //        e.preventDefault(); 
+        //        $(inputfield).append(txt);
+        //    }
+        //    );
+        
+        
+        $(inputfield).on("click", ".remove_field", function (e) {
+            e.preventDefault();
+            count--;
+            $(this).parentsUntil('div.level').remove();
+            $("#Button-" + (count - 1)).show();
+            $("#Remove-" + (count - 1)).show();
+            //$(this).parent('div').remove();
+            
+        })
+        $(inputfield).on("click", ".addbutton", function (e) {
+            e.preventDefault();
+         
+                var departmentValidation = $(inputfield).kendoValidator().data("kendoValidator");
+  
+                if (departmentValidation.validate()) {
+                    $("#Button-" + (count - 1)).hide();
+                    $("#Remove-" + (count - 1)).hide();
+                    //var txt = "<div class='form-group'><div class='row'><input class='k-textbox' placeholder='Department Name' id='deptname-" + count + "' name='deptname-" + count + "' type='text' data-val-required='Department Name Required' /><span class='k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error' style='visibility:hidden' data-for='deptname-" + count + "' data-valmsg-for='deptname-" + count + "' id='deptname-" + count + "_validationMessage' role='alert'><span class='k-icon k-warning'> </span> Enter Department Name</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class='k-textbox' type='text' placeholder='Department Code' data-val-required='Department Code Required' id='deptcode-" + count + "' name='deptcode-" + count + "' /><span class='k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error' data-for='deptcode-" + count + "' data-valmsg-for='deptcode-" + count + "' id='deptcode-" + count + "_validationMessage' style='visibility:hidden' role='alert'><span class='k-icon k-warning'> </span> Enter Department Code</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class='addbutton k-button' id='Button-"+count+"' type='button'> <span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button> <button class='remove_field k-button' name='btn[]' type='button'> <span class='glyphicon glyphicon-remove' aria-hidden='true'></span> </button></div></div>";
+                    var txt = '<div class="level"><div class="form-group"><div class="row">' +
+                            '<div class="col-md-2">'+
+                                '<div class="row">'+
+                                    '<div class="col"><input class="k-textbox" placeholder="Department Name" data-val-required="Department Name Required" id="deptname-' + count + '" name="deptname-' + count + '" type="text" /></div>' +
+                                    '<div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptname-' + count + '"></span></div>' +
+                                '</div>'+
+                            '</div>'+
+                            '<div class="col-md-2">'+
+                                '<div class="row">'+
+                                    '<div class="col"><input class="k-textbox" placeholder="Department Code" data-val-number="Enter valid Department Code" data-val-required="Department Code Required" id="deptcode-' + count + '" name="deptcode-' + count + '" type="text" /></div>' +
+                                    '<div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptcode-' + count + '"></span></div>' +
+                                '</div>'+
+                            '</div>'+
+                            '<div class="col-md-1">'+
+                                '<div class="row">'+
+                                    '<div class="col"><button class="addbutton k-button" id="Button-' + count + '" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>'+
+                                    '<button class="remove_field k-button" id="Remove-' + count + '" type="button"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> </button></div>' +
+                                    '<div class="col"></div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div></div></div>';
+                    count++;
+                    $(inputfield).append(txt);
+                }
+            
+            })
+        
+    });
+
+    $("#submitdept").click(function () {
+        if ($("#deptname-1").val() == "" || $("#deptcode-1").val() == "") {
+            //document.getElementById("deptnamevalid-1").style.visibility = "visible";
+            //document.getElementById("deptcodevalid-1").style.visibility = "visible";
+            var departmentValidation = $(".inputField").kendoValidator().data("kendoValidator");
+        }
+        else {
+
+
+            if (parseInt(count) > 1) {
+                var alldeptlist = "";
+                for (var i = 1; i < parseInt(count) ; i++) {
+                    alldeptlist += $("#deptname-" + i).val() + "|" + $("#deptcode-" + i).val() + ",";
+                }
+                $("#alldept").val(alldeptlist);
+            }
+            else {
+                $("#alldept").val($("#deptname-1").val() + "|" + $("#deptcode-1").val() + "|" + ",");
+            }
+        }
+        
+    });
+
+    $("form").kendoValidator().data("kendoValidator");
+    
+
+
+    function change() {
+        var deptId = 20;
+         alert(deptId);
+        if (deptId != "") {
+            $("#LoadPartial").show();
+            $("#LoadPartial").load('@Url.Action("DynamicFieldShow", "StudentInfoes")?deptid=' + deptId);
+        }
+        else {
+            $("#LoadPartial").hide();
+        }
+    }
+
+    </script>
+
+
+@*<div class="row">
+            <input class="k-textbox" placeholder="Department Name" data-val-required="Department Name Required" id="deptname-1" name="deptname-1" type="text" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input class="k-textbox" type="text" placeholder="Department Code" data-val-required='Department Code Required' id="deptcode-1" name="deptcode-1" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="addbutton k-button" id="Button-1" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+    </div>*@
+
+
+@*$("form").kendoValidator({
+        rules: {
+            customRule1: function (input) {
+                if (input.is("[name=deptname-1]") && input.val() == "") {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            },
+            customRule2: function(input){
+                if (input.is("[name=deptcode-1]") && input.val() === "") {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            },
+            DeptName: function (input){
+                if (count > 2) {
+                    var c = count - 1;
+                    if ( input.attr("id") === "deptname-" + c && input.val() == "") {
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+
+                }
+                else {
+                    return true;
+                }
+            },
+            DeptCode: function (input) {
+                if (count > 2) {
+                    var d = count - 1;
+                    //alert(count);
+                    if ( input.attr("id") === "deptcode-" + d && input.val() == "") {
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                else {
+                    return true;
+                }
+            },
+
+        },
+        messages: {
+            customRule1: "Enter Department Name",
+            customRule2: "Enter Department Code",
+            DeptName: "Enter Department Name",
+            DeptCode: "Enter Department Code"
+
+        },
+
+    });*@
+
+    @*//$("form").kendoValidator({
+    //    rules: {
+    //        custom: function (input) {
+    //            var errormessage;
+    //            var remoteAttr = input.attr("data-val-remote-url");
+    //            if (typeof remoteAttr === typeof undefined || remoteAttr === false) {
+    //                return true;
+    //            }
+    //            var isInvalid;
+    //            var data = {};
+    //            var ClientId = $("#ClientId").val();
+    //            var Name = input.val();
+    //            data = { ClientId: ClientId, Name: Name };
+    //            $.ajax({
+    //                url: remoteAttr,
+    //                mode: "abort",
+    //                port: "validate" + input.attr('name'),
+    //                dataType: "json",
+    //                type: input.attr("data-val-remote-type"),
+    //                data: data,
+    //                async: false,
+    //                success: function (response) {
+    //                    isInvalid = response;
+    //                    if (isInvalid === true) {
+    //                        isInvalid = true;
+    //                    }
+    //                    else {
+    //                        isInvalid = false;
+    //                    }
+    //                }
+    //            });
+    //            return isInvalid;
+    //        },
+    //        Division: function (input) {
+    //            if (input.is("[name=DivisionId]") && $("#Country").val() == "BD" && input.val() === "") {
+    //                return false;
+    //            } else {
+    //                return true;
+    //            }
+    //        },
+    //        City: function (input) {
+    //            if (input.is("[name=City]") && input.val() === "") {
+    //                return false;
+    //            } else {
+    //                return true;
+    //            }
+    //        },
+
+    //        ClientType: function (input) {
+    //            if (input.is("[name=ClientType]")) {
+    //                if ($("#IsBuyer").is(":checked") === true || $("#IsSupplier").is(":checked") === true || $("#IsOutSourcer").is(":checked") === true || $("#IsLogistic").is(":checked") === true) {
+    //                    return true;
+    //                }
+    //                else {
+    //                    return false;
+    //                }
+    //            }
+    //            return true;
+    //        },
+    //        ContactLast: function (input) {
+    //            if (input.attr("id") === "txtContact-" + count) {
+    //                if (telInput.intlTelInput("isValidNumber")) {
+    //                    return true;
+    //                } else {
+    //                    return false;
+    //                }
+    //            }
+    //            return true;
+    //        },
+    //        ContactTypeLast: function (input) {
+    //            if (input.attr("id") === "txtContactType-" + count && input.val() === "") {
+    //                return false;
+    //            }
+    //            else {
+    //                return true;
+    //            }
+    //        }
+    //    },
+    //    messages: {
+    //        custom: function (input) {
+    //            return "Client Name Already Exist!";
+    //        },
+    //        Division: "Please select division",
+    //        City: "Please enter city",
+    //        Contact: "Please enter valid contact number",
+    //        ContactType: "Please select contact type",
+    //        ContactLast: "Please enter valid contact number",
+    //        ClientType: "Please select one type",
+    //        ContactTypeLast: "Please select contact type"
+    //    }
+    //});
+
+
+    //$("#DivForContact").on("click", "#btnAdd", function () {
+    //    var contactValidate = $("#DivForContact").kendoValidator({
+    //        rules: {
+    //            Contact: function (input) {
+    //                if (input.attr("id") === "txtContact-" + count) {
+    //                    if (telInput.intlTelInput("isValidNumber")) {
+    //                        return true;
+    //                    } else {
+    //                        return false;
+    //                    }
+    //                }
+    //                return true;
+    //            },
+    //            ContactType: function (input) {
+    //                if (input.attr("id") === "txtContactType-" + count && input.val() === "") {
+    //                    return false;
+    //                }
+    //                else {
+    //                    return true;
+    //                }
+    //            }
+    //        },
+    //        messages: {
+    //            Contact: "Please enter valid contact number",
+    //            ContactType: "Please select contact type"
+    //        }
+    //    }).data("kendoValidator");
+    //    if (contactValidate.validate()) {
+    //        var data = [{ text: "Land", value: "1" }, { text: "Mobile", value: "2" }];
+    //        $("#DivForDynBtn-" + count).empty();
+    //        $("#DivForDynBtn-" + count).hide();
+    //        count++;
+    //        $("#DivForContact").append('<div id="DynDivContact-' + count + '">' +
+    //         '<div class="form-group">' +
+    //                 '<label class="control-label col-md-3 col-sm-4 col-xs-12" >Contact No ' + count + '</label>' +
+    //                     '<div class="col-md-4 col-sm-5 col-xs-5">' +
+    //                        '<input class="form-control k-textbox text-box single-line k-valid" id="txtContact-' + count + '" name="txtContact-' + count + '"type="text" value="">' +
+    //                         '<span class="field-validation-valid text-danger" data-valmsg-for="txtContact-' + count + '" data-valmsg-replace="true"style="display: none;"></span>' +
+    //                      '</div>' +
+    //            '</div>' +
+    //             '<div class="form-group">' +
+    //                  '<label class="control-label col-md-3 col-sm-4 col-xs-12" >Type</label>' +
+    //                      '<div class="col-md-4 col-sm-5 col-xs-5">' +
+    //                        '<input id="txtContactType-' + count + '" name="txtContactType-' + count + '" style="width: 100%;" />' +
+    //                        '<span class="field-validation-valid text-danger" data-valmsg-for="txtContactType-' + count + '" data-valmsg-replace="true"style="display: none;"></span>' +
+    //                      '</div>' +
+    //              '</div>' +
+    //              '<div class="form-group">' +
+    //                  '<label class="control-label col-md-3 col-sm-4 col-xs-12" >Comments</label>' +
+    //                    '<div class="col-md-4 col-sm-5 col-xs-5">' +
+    //                      '<textarea class="form-control k-textbox text-box single-line k-valid" rows="3" cols="40" name="txtComment-' + count + '"id="txtComment-' + count + '">' + '</textarea>' +
+    //                      '</div>' +
+    //           '<div class="col-md-2 col-sm-2 col-xs-2" id="DivForDynBtn-' + count + '">' +
+    //                '<span class="k-icon k-i-plus" style="margin-right: .3rem;" id="btnAdd"></span>' +
+    //                    '<span class="k-icon k-i-close" style="margin-right: .3rem;" id="btnRemove"></span>' +
+    //                       '</div>' +
+    //                '</div>' +
+    //             '</div>');
+    //        $("#txtContactType-" + count).kendoDropDownList({
+    //            dataTextField: "text",
+    //            dataValueField: "value",
+    //            dataSource: data,
+    //            optionLabel: "--Select--"
+    //        });
+    //        id = "txtContact-" + count;
+    //        dailingCode(id);
+    //    }
+    //});*@

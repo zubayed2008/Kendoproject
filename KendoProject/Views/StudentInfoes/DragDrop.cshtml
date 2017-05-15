@@ -1,0 +1,56 @@
+﻿@model StudentBasic.ModelView.StudentInfoModelView
+@{
+    ViewBag.Title = "DragDrop";
+}
+
+<h2>Drag Drop</h2>
+
+
+<div class="demo-section k-content">
+    <h4>Student List</h4>
+
+    @(Html.Kendo().TreeView()
+        .Name("treeview-left")
+        .DragAndDrop(true)
+        .Items(treeview =>
+        {
+
+            treeview.Add().Text("Name of all Students")
+                .Expanded(false)
+                .Items(furniture =>
+                {
+                    string dptcode;
+                    foreach (var item in ViewBag.Student as IEnumerable<StudentBasic.ModelView.StudentInfoModelView>)
+                    {
+                        furniture.Add().Text(@item.Name)
+                        .Expanded(false)
+                        .Items( students =>
+                        {
+                            dptcode = item.departmentCode.ToString();
+                            students.Add().Text("Student ID: " + @item.ID);
+                            students.Add().Text("Department Name: " + @item.dptName);
+                            students.Add().Text("Year: " + @item.Year);
+                            students.Add().Text("Department Code: " + dptcode);
+                        
+                    });
+                               
+                    }
+
+                }
+                );
+         
+        })
+    )
+    
+
+</div>
+
+<style>
+    #treeview-left,
+    #treeview-right {
+        overflow: visible;
+    }
+</style>
+
+
+

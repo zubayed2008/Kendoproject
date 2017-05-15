@@ -1,0 +1,225 @@
+﻿@model StudentBasic.ModelView.StudentInfoModelView
+
+@Scripts.Render("~/bundles/jqueryui")
+@Styles.Render("~/Content/themes/base/css")
+<link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+<link href="~/Content/fa%20fa%20icon/font-awesome.css" rel="stylesheet" />
+
+@Html.HiddenFor(m => m.Name)
+
+@{
+    ViewBag.Title = "TableView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+<link href="~/Content/autocomplete/jquery-ui.css" rel="stylesheet" />*@
+
+<h2>Table View</h2><br />
+<div class="col-md-12 col-sm-12 col-xs-12 row" style="border:solid 1px">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" id="tags" class="form-control ui-autocomplete" placeholder="Enter Name..">
+            <span class="input-group-btn">
+                <button class="btn btn-default" id="search" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+            </span>
+            <span class="input-group-addon"> Scroll Value: <span id="sc">0</span></span>
+            <span class="input-group-addon"> Total Load: <span id="studentloaded">16</span></span>
+        </div><!-- /input-group -->
+    </div> <!--col-md-3 ends-->
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12 row" style="border:solid 1px" id="Partial"><div id="load" class="loading_partial" hidden></div></div>
+
+
+
+@*<div class="col-md-6" style="border:solid 1px">Scroll Value: <span id="sc">0</span></div>
+    <br />*@
+
+
+
+
+
+<script>
+    var tags= [];
+
+    var array = @Html.Raw(Json.Encode(ViewBag.AllStudent));
+    $(document).ready(function () {
+        $("#load").show();
+        $("#Partial").load('@Url.Action("PartialTableView", "StudentInfoes")');
+        $("#load").hide();
+        for(var i = 0; i < array.length; i++) {
+            tags.push(array[i].Name);
+        }
+        $(document).scroll(function () {
+            var current = $(this).scrollTop();
+            $("#sc").text(current);
+        });
+        
+
+    });
+
+    $("#tags").autocomplete({
+        source: tags,
+        open: function (e, ui) {
+            var acData = $(this).data('ui-autocomplete');
+            acData
+            .menu
+            .element
+            .find('li')
+            .each(function () {
+                var me = $(this);
+                var keywords = acData.term.split(' ').join('|');
+                me.html(me.text().replace(new RegExp("(" + keywords + ")", "gi"), '<b style="color:blue;">$1</b>'));
+            })
+        },
+        autoFocus: true,
+        select: function(e, ui) {
+            var name =  ui.item.value;
+            var namesplit = name.split(' ')[0];
+            $("#Partial").load('@Url.Action("PartialTableView", "StudentInfoes")?Name=' + namesplit);
+        }
+        
+    });
+
+    $("#tags").keyup(
+        function()
+            {
+                //alert($('#autocomplete').val());
+                var name =  $('#tags').val();
+                var namesplit = name.split(' ')[0];
+                $("#Partial").load('@Url.Action("PartialTableView", "StudentInfoes")?Name=' + namesplit);
+        }
+        );
+
+
+    $("#search").click( function(){
+        //alert($('#autocomplete').val());
+        var name =  $('#tags').val();
+        var namesplit = name.split(' ')[0];
+        $("#Partial").load('@Url.Action("PartialTableView", "StudentInfoes")?Name=' + namesplit);
+    });
+    $("#tags").keypress( function(){
+        //alert($('#autocomplete').val());
+        var name =  $('#tags').val();
+        var namesplit = name.split(' ')[0];
+        $("#Partial").load('@Url.Action("PartialTableView", "StudentInfoes")?Name=' + namesplit);
+    });
+
+
+
+
+
+
+
+
+</script>
+
+<style>
+    li.ui-menu-item:hover {
+        background-color: #428bca;
+        color: white;
+    }
+</style>
+
+
+
+@*Custom autocomplete instance.
+              $(".widget")( "app.autocomplete", ".ui-autocomplete", {
+
+                  // Which class get's applied to matched text in the menu items.
+                  options: {
+                      highlightClass: "ui-state-highlight"
+                  },
+
+                  _renderItem: function( ul, item ) {
+
+                      // Replace the matched text with a custom span. This
+                      // span uses the class found in the "highlightClass" option.
+                      var re = new RegExp( "(" + this.term + ")", "gi" ),
+                          cls = this.options.highlightClass,
+                          template = "<span class='" + cls + "'>$1</span>",
+                          label = item.label.replace( re, template ),
+                          $li = $( "<li />" ).appendTo( ul );
+
+                      // Create and return the custom menu item content.
+                      $( "<a />" ).attr( "href", "#" )
+                                 .html( label )
+                                 .appendTo( $li );
+
+                      return $li;
+
+                  }
+
+          });
+
+
+    var availableTags = [{
+      label: 'honey',
+      value: 1
+    }, {
+      label: 'apples',
+      value: 2
+    }, {
+      label: 'milk',
+      value: 3
+    }, {
+      label: 'tea',
+      value: 4
+    }, {
+      label: 'oranges',
+      value: 5
+    }, {
+      label: 'bread',
+      value: 6
+    }, {
+      label: 'cheese',
+      value: 7
+    }, {
+      label: 'apple-sauce',
+      value: 8
+    }, {
+      label: 'cream-cheese',
+      value: 9
+    }];
+
+    function split(val) {
+      return val.split(/,\s*/);
+    }
+
+    function extractLast(term) {
+      return split(term).pop();
+    }
+
+    $("#tags").autocomplete({
+        minLength: 0,
+        source: function(request, response) {
+          // delegate back to autocomplete, but extract the last term
+            var list = $.ui.autocomplete.filter(availableTags, extractLast(request.term));
+          if (request.term) {
+            var regex = new RegExp('(' + $.ui.autocomplete.escapeRegex(request.term) + ')', "gi");
+            list = list.map(function(item) {
+              return {
+                label: item.label.replace(regex, '<b>$1</b>'),
+                value: item.value
+              }
+            })
+          }
+          response(list);
+        },
+
+        select: function(event, ui) {
+          var terms = split(this.value);
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push(ui.item.value);
+          // add placeholder to get the comma-and-space at the end
+          terms.push("");
+          this.value = terms.join(", ");
+          return false;
+        }
+      });
+    $("#tags").data('uiAutocomplete')._renderItem = function(ul, item) {
+      return $("<li>
+      ").append(item.label).appendTo(ul);
+      };*@

@@ -1,0 +1,49 @@
+﻿@model StudentBasic.ModelView.StudentInfoModelView
+@{
+    ViewBag.Title = "TableViewEdit";
+}
+
+
+<h2>Table View Edit</h2>
+<form class="form-horizontal" method="post">
+    @Html.HiddenFor(m => m.ID)
+    <div class="form-group">
+        <div class="form-inline">
+            <label class="col-md-2 control-label" for="Name">Name :</label>
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @data_val = "false" , @class = "form-control" } })
+            @*<input id="Name" data-val-required="Name Required" value="@Model.Name" class="form-control" placeholder="Enter Name" />*@
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="form-inline">
+            <label class="col-md-2 control-label" for="Department">Department: </label>
+            @(Html.Kendo().DropDownListFor(model => model.DepartmentID)
+                                    .OptionLabel("Select A Department")
+                                    .DataTextField("dptName")
+                                    .DataValueField("DepartmentID")
+                                    .AutoBind(true)
+                                    .HtmlAttributes(new { style = "width: 280px;" })
+                                    .DataSource(ds =>
+                                    {
+                                        ds.Read("DepartmentList", "StudentInfoes");
+                                    })
+            )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="form-inline">
+            <label class="col-md-2 control-label" for="Year">Year: </label>
+            @Html.EditorFor(model => model.Year, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <input type="submit" value="Save" class="btn btn-success col-md-offset-3" />
+    <input type="button" value="Cancel" class="btn btn-danger" onclick="location.href='TableView/StudentInfoes'" />
+     @*<input type="button" class="btn btn-danger" value="Cancel" />*@
+</form>
+
+<script>
+
+
+    $("form").kendoValidator().data("kendoValidator");
+</script>
+

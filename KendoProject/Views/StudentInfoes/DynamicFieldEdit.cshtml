@@ -1,0 +1,130 @@
+﻿@*Md. Zubayed Islam
+    12/11/2016
+*@
+
+@model StudentBasic.ModelView.StudentInfoModelView
+@Html.HiddenFor( m => m.alldept)
+ 
+
+    @{
+        int c = 1;
+        int total = 1;
+        foreach (var item in ViewBag.Department as IEnumerable<StudentBasic.Models.Department>)
+        {
+            total++;
+        }
+     }
+        <div id="contain" class="inputField">
+    @{
+        foreach (var item in ViewBag.Department as IEnumerable<StudentBasic.Models.Department>)
+        {
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="col"><input class="k-textbox" placeholder="Department Name" data-val-required="Department Name Required" id="deptname-@c" name="deptname-@c" type="text" value=@item.DepartmentName /></div>
+                        <div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptname-@c"></span></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="col"><input class="k-textbox" placeholder="Department Code" data-val-number="Enter valid Department Code" data-val-required="Department Code Required" id="deptcode-@c" name="deptcode-@c" type="text" value=@item.DepartmentCode /></div>
+                        <div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptcode-@c"></span></div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="col"><input class="k-textbox hidden" id="deptid-@c" name="deptid-@c" type="text" value=@item.DepartmentID /></div>
+                        <div class="col">
+                            @{
+            if (total == (c + 1))
+            {
+                <button class="addbutton k-button" id="Button-@c" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+            }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            c++;
+
+        }
+
+    }
+</div>
+
+
+            <input type="submit" id="SaveDB" class="btn btn-danger" value="Change Database" />
+            
+
+<script>
+    var count = Number(@c);
+        $(document).ready(function () {
+            var addbtn = $(".addbutton");
+            var inputfield = $(".inputField");
+   
+
+            $(inputfield).on("click", ".remove_field", function (e) {
+                e.preventDefault();
+                count--;
+
+                $(this).parentsUntil('div.level').remove();
+                $("#Button-" + (count - 1)).show();
+                $("#Remove-" + (count - 1)).show();
+
+            })
+            $(inputfield).on("click", ".addbutton", function (e) {
+                e.preventDefault();
+                var departmentValidation = $(inputfield).kendoValidator().data("kendoValidator");
+
+                if (departmentValidation.validate()) {
+                    $("#Button-" + (count - 1)).hide();
+                    $("#Remove-" + (count - 1)).hide();
+                    //var txt = "<div class='form-group'><div class='row'><input class='k-textbox' placeholder='Department Name' id='deptname-" + count + "' name='deptname-" + count + "' type='text' data-val-required='Department Name Required' /><span class='k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error' style='visibility:hidden' data-for='deptname-" + count + "' data-valmsg-for='deptname-" + count + "' id='deptname-" + count + "_validationMessage' role='alert'><span class='k-icon k-warning'> </span> Enter Department Name</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class='k-textbox' type='text' placeholder='Department Code' data-val-required='Department Code Required' id='deptcode-" + count + "' name='deptcode-" + count + "' /><span class='k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error' data-for='deptcode-" + count + "' data-valmsg-for='deptcode-" + count + "' id='deptcode-" + count + "_validationMessage' style='visibility:hidden' role='alert'><span class='k-icon k-warning'> </span> Enter Department Code</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class='addbutton k-button' id='Button-"+count+"' type='button'> <span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button> <button class='remove_field k-button' name='btn[]' type='button'> <span class='glyphicon glyphicon-remove' aria-hidden='true'></span> </button></div></div>";
+                    var txt = '<div class="level"><div class="form-group"><div class="row">' +
+                            '<div class="col-md-2">' +
+                                    '<div class="col"><input class="k-textbox" placeholder="Department Name" data-val-required="Department Name Required" id="deptname-' + count + '" name="deptname-' + count + '" type="text" /></div>' +
+                                    '<div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptname-' + count + '"></span></div>' +
+                            '</div>' +
+                            '<div class="col-md-2">' +
+                                    '<div class="col"><input class="k-textbox" placeholder="Department Code" data-val-number="Enter valid Department Code" data-val-required="Department Code Required" id="deptcode-' + count + '" name="deptcode-' + count + '" type="text" /></div>' +
+                                    '<div class="col"><span class="field-validation-valid text-danger" data-valmsg-for="deptcode-' + count + '"></span></div>' +
+                            '</div>' +
+                            '<div class="col-md-1">' +
+                            '<div class="col"><input class="k-textbox hidden" id="deptid-' + count + '" name="deptid-' + count + '" type="text" value=0 /></div>' +
+                                    '<div class="col"><button class="addbutton k-button" id="Button-' + count + '" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>' +
+                                    '<button class="remove_field k-button" id="Remove-' + count + '" type="button"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> </button></div>' +
+                                    '<div class="col"></div>' +
+                            '</div>' +
+                        '</div></div></div>';
+                    count++;
+                    $(inputfield).append(txt);
+                }
+
+            })
+
+        });
+
+        $("#SaveDB").click(function () {
+
+            //alert(count);
+            if (parseInt(count) > 1) {
+                var alldeptlist = "";
+                for (var i = 1; i < parseInt(count) ; i++) {
+                    alldeptlist += $("#deptname-" + i).val() + "|" + $("#deptcode-" + i).val() + "|" + $("#deptid-" + i).val() + ",";
+                }
+                $("#alldept").val(alldeptlist);
+                //alert(alldeptlist);
+            }
+            else {
+                $("#alldept").val($("#deptname-1").val() + "|" + $("#deptcode-1").val() + "|" + $("#deptid-1").val() + "|" + ",");
+            }
+
+        }
+
+
+    );
+
+        $("#Partial2").kendoValidator().data("kendoValidator");
+
+
+</script>
+
+
+

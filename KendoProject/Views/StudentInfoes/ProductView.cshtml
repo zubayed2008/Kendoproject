@@ -1,0 +1,91 @@
+﻿@model IEnumerable<StudentBasic.Models.StudentInfo>
+
+@(Html.Kendo().Grid<StudentBasic.ModelView.StudentInfoModelView>()
+    .Name("Grid")
+    .Columns(columns =>
+        {
+            columns.Bound(m => m.Name);
+            columns.Bound(m => m.DepartmentID);
+            columns.Bound(m => m.Year);
+            
+            //columns.Command(commands =>
+            //    {
+            //        // commands.Custom("Edit").Text("Edit").Click("editFaculty");
+            //        // commands.Custom("Delete").Text("Delete").Click("deleteFaculty");
+            //    });
+        })
+        .Filterable(f => f.Mode(GridFilterMode.Row))
+        .ToolBar(toolbar =>
+              {
+                  toolbar.Template(@<text>
+                    <div class="toolbar">
+                        <div class="k-edit-buttons" style="float:left;">
+                            <a class="k-button k-button-icontext k-grid-header" href="#" id="ShowPopUpFacultyCreate"><span class="k-icon k-add"></span>Create Faculty</a>
+                        </div>
+                    </div>
+                </text>);
+              })
+        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("_FacultyEdit").Window(w => w.Title("Faculty Edit").Width(610)))
+        .DataSource(dataSource => dataSource.Ajax()
+          .Model(model =>
+          {
+            model.Id(m => m.ID);
+             model.Field(m => m.Name).Editable(true);
+          })
+          .Batch(false)
+          .ServerOperation(false)
+          .Read(read => read.Action("ProductView", "StudentInfoes"))
+          .Events(events => events.Error("error"))
+          .PageSize(20)
+                          )
+                         .Pageable(pageable => pageable
+                         .Refresh(true)
+                         .PageSizes(new int[] { 20, 50, 100, 500 })
+                         .ButtonCount(10)
+                        ).Sortable()
+)
+
+
+
+
+
+
+
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Year)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Department.DepartmentName)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Year)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Department.DepartmentName)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+    </tr>
+}
+
+</table>

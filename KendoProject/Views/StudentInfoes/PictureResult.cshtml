@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "PictureResult";
+}
+
+<h2>Picture Result</h2>
+
+<div class="demo-section k-content">
+    <h4>Uploaded files</h4>
+
+    @if (Session["UploadedFile"]!=null)
+    {
+        <div class="t-widget t-upload">
+            <ul class="t-upload-files t-reset">
+                @foreach (var attachment in (IEnumerable<string>)Session["UploadedFile"])
+                {
+                    <li class="t-file"><span class="t-icon t-success"></span>@attachment</li>
+                }
+            </ul>
+        </div>
+    }
+    else
+    {
+        <div class="t-widget t-upload">
+            <ul class="t-upload-files t-reset">
+                    <li class="t-file"><span class="t-icon t-success"></span>Failed to Upload Picture</li>
+            </ul>
+        </div>
+    }
+
+    <p style="margin-top: 1em;">
+        <a href='@Url.Action("PictureUpload", "StudentInfoes")' class="k-button k-primary">Go back</a>
+    </p>
+</div>
+

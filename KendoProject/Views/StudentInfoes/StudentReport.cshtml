@@ -1,0 +1,245 @@
+﻿@model StudentBasic.ModelView.StudentInfoModelView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@(Html.Kendo().Window()
+       .Name("StudentCreatePopUp")
+       .Visible(false)
+       .Modal(true)
+       .Draggable(true)
+       .Width(100)
+       .Height(250)
+)
+
+<div class="form-horizontal">
+    <h4>Status Report</h4>
+    @Html.LabelFor(model => model.Department,"Select A Department", htmlAttributes: new { @class = "control-label col-md-4 col-sm-4" })
+    <div class="col-md-8 col-sm-4">
+        @*@(Html.Kendo().DropDownListFor(model => model.DepartmentID)
+          .OptionLabel("--Select A Department--")
+          .Events(e => e.Change("change"))
+          .BindTo(ViewBag.DepartmentID)
+          .HtmlAttributes(new { style = "width: 28%" })
+        )*@
+        @(Html.Kendo().DropDownListFor(model => model.DepartmentID)
+                                .OptionLabel("Select A Department")
+                                .DataTextField("dptName")
+                                .DataValueField("DepartmentID")
+                                .AutoBind(false)
+                                .Events(e => e.Change("change"))
+                                .HtmlAttributes(new { style = "width: 250px;" })
+                                .DataSource(ds =>
+                                {
+                                    ds.Read("DepartmentList", "StudentInfoes");
+                                })
+        )
+        @Html.ValidationMessageFor(model => model.dptName, "", new { @class = "text-danger" })
+    </div><br />
+    <div id="LoadPartial" class="col-lg-12 col-md-12">
+        <div id="load"  class="loading_partial" hidden></div>
+    </div>
+    <div>
+        <br />
+        
+
+        <span><button class="btn-primary btn-lg" id="ShowPopUpCreateRole">Add New Student</button></span>
+        @(Html.Kendo().Grid<StudentBasic.ModelView.StudentInfoModelView>()
+    .Name("Grid")
+    .Columns(columns =>
+        {
+
+            columns.Template(t => { }).Title("Serial No").ClientTemplate(
+            "#= renderNumber(data) #"
+        );
+            columns.Bound(m => m.ID).Title("Student ID");
+            columns.Bound(m => m.Name).Title("Student Name");
+           // columns.Command(command => command.Destroy()).Width(110);
+            columns.Command(commands =>
+                { 
+                    commands.Custom("Detail").Text("Detail").Click("studentDetail");
+                    commands.Custom("Edit").Text("Edit").Click("StudentEdit");
+                    commands.Destroy();
+                }
+                );
+
+            //columns.Command(commands =>
+            //    {
+            //        // commands.Custom("Edit").Text("Edit").Click("editFaculty");
+            //        // commands.Custom("Delete").Text("Delete").Click("deleteFaculty");
+            //    });
+        })
+        .Filterable(f => f.Mode(GridFilterMode.Row))
+        .ToolBar(toolbar =>
+              {
+                  toolbar.Template(@<text>
+                    <div class="toolbar">
+                        <div class="k-dropdown" style="float:right;">
+                                @(Html.Kendo().DropDownList()
+                                .Name("categories")
+                                .OptionLabel("Select A Department")
+                                .DataTextField("dptName")
+                                .DataValueField("DepartmentID")
+                                .AutoBind(false)
+                                .Events(e => e.Change("deptchange"))
+                                .HtmlAttributes(new { style = "width: 170px;" })
+                                .DataSource(ds =>
+                                {
+                                    ds.Read("DepartmentList", "StudentInfoes");
+                                })
+                                )  
+                        </div>
+                    </div>
+                </text>);
+              })
+        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("studentEdit").Window(w => w.Title("Student Edit").Width(610)))
+        .DataSource(dataSource => dataSource.Ajax()
+                .Model(model =>
+                {
+                    model.Id(m => m.ID);
+                    model.Field(m => m.Name).Editable(true);
+                })
+          .Batch(false)
+          .ServerOperation(false)
+          .Destroy("StudentDestroy", "StudentInfoes")
+          .Read(read => read.Action("ProductView1", "StudentInfoes"))
+          //.Events(events => events.Error("error"))
+          .PageSize(20)
+                          )
+                         .Pageable(pageable => pageable
+                         .Refresh(true)
+                         .PageSizes(new int[] { 20, 50, 100, 500 })
+                         .ButtonCount(10)
+                        ).Sortable()
+
+        )
+    </div>
+</div>
+<style>
+    .loading_partial {
+        background: url('/Content/image/progress-bar.gif') no-repeat center;
+        height: 80px;
+        margin-top:20px;
+    }
+</style>
+  
+<script>
+   
+
+    function change() {
+        var deptId = $("#DepartmentID").val();
+       // alert(deptId);
+        if (deptId != "") {
+            $("#load").show();
+            $("#LoadPartial").show();
+            $("#LoadPartial").load('@Url.Action("DepartmentPartialView","StudentInfoes")?deptid=' + deptId);
+            $("#load").hide();
+        }
+        else {
+            $("#LoadPartial").hide(); 
+        }
+    }
+
+        function deptchange() {
+            var value = this.value(),
+                 grid = $("#Grid").data("kendoGrid");
+
+            if (value) {
+                grid.dataSource.filter({ field: "DepartmentID", operator: "eq", value: parseInt(value) });
+            } else {
+                grid.dataSource.filter({});
+            }
+        }
+
+        //function categoriesChange() {
+        //    var value = this.value(),
+        //	 	 grid = $("#Grid").data("kendoGrid");
+
+        //    if (value) {
+        //        grid.dataSource.filter({ field: "DepartmentID", operator: "eq", value: parseInt(value) });
+        //    } else {
+        //        grid.dataSource.filter({});
+        //    }
+        //}
+
+
+        //$(document).ready(function () {
+        //    $("#get").click(function () {
+        //        var departmentName = $("#Dept").data("kendoDropDownList");
+        //        alert('Thank you! Your Choice is:\n\nDepartment Name: ' + departmentName.value());
+        //    });
+        //});
+</script>
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+
+
+    $("#ShowPopUpCreateRole").click(function () {
+        var window = $("#StudentCreatePopUp").data("kendoWindow");
+        window.setOptions({
+            width: '55%',
+            title: 'Please Provide Information For Student'
+        });
+        window.refresh({
+            url: "/StudentInfoes/StudentCreatePopUp"
+        });
+        window.center();
+        window.open();
+    });
+
+    function StudentEdit(e) {
+        e.preventDefault();
+        var window = $("#StudentCreatePopUp").data("kendoWindow");
+        window.setOptions({
+            width: '55%',
+            title: 'Edit Information For Student'
+        });
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.refresh({
+            url: "/StudentInfoes/StudentCreatePopUp?id=" + dataItem.ID
+        });
+        window.center();
+        window.open();        
+        
+    }
+    function studentDetail(e)
+    {
+        e.preventDefault();
+        var window = $("#StudentCreatePopUp").data("kendoWindow");
+        window.setOptions({
+            width: '55%',
+            title: 'Student Details',
+            height: '200'
+        });
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.refresh({
+            url: "/StudentInfoes/studentDetails?id=" + dataItem.ID
+        });
+        window.center();
+        window.open();
+    }
+
+    
+
+        var rowNumber = 0;
+        function resetRowNumber(e) {
+            rowNumber = 0;
+        }
+        function renderNumber(data) {
+            return ++rowNumber;
+        }
+</script>
